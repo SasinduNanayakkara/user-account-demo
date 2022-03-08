@@ -81,4 +81,43 @@ const getUsers = async (req,res) => {
     }
 }
 
-module.exports = {addUser, userLogin, getUsers}; //export functions
+const updateUser = async (req,res) => {
+
+    const userId = req.params.id;
+
+    try {
+        const user = await User.findById(userId);
+        if(!user) {
+            res.status(404).json("No User Found");
+        }
+
+        const {firstName, lastName, email, username} = req.body;
+        const updatedUser = await User.findByIdAndUpdate(userId, {firstName, lastName, email, username});
+
+        res.status(200).json(updatedUser);
+    }
+    catch(err) {
+        res.status(400).send({message: err});
+    }
+};
+
+const deleteUser = async (req,res) => {
+    const userId = req.params.id;
+
+    try {
+        const user = await User.findById(userId);
+
+        if(!user) {
+            res.status(404).json("User Not Found");
+        }
+
+        const deletedUser = await User.findByIdAndDelete(userId);
+        res.status(200).json("User Deleted");
+    }
+    catch(err) {
+        res.status(400).json(err.message);
+    }
+};
+
+module.exports = {addUser, userLogin, getUsers, updateUser, deleteUser}; //export functions
+
